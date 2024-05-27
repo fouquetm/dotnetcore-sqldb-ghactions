@@ -19,7 +19,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }} 
+          dotnet-version: ${{ vars.DOTNET_VERSION }} 
       
       # Run dotnet build and publish
       - name: dotnet build and publish
@@ -37,14 +37,14 @@ jobs:
       - name: 'Run Azure webapp deploy action using publish profile credentials'
         uses: azure/webapps-deploy@v2
         with: 
-          app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
-          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
+          app-name: ${{ vars.AZURE_WEBAPP_NAME }} # Replace with your app name
+          package: '${{ vars.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
 
       - name: create db connection string
         run: |
-          CONN_STR=$(az sql db show-connection-string --client ado.net --server ${{ env.SQLSERVER_NAME }} --name ${{ env.DATABASE_NAME }} -o tsv)
-          CONN_STR=$(echo $CONN_STR | sed "s/<username>/${{ env.SQLADMIN_LOGIN }}/g")
-          CONN_STR=$(echo $CONN_STR | sed "s/<password>/${{ env.SQLADMIN_PASS }}/g")
+          CONN_STR=$(az sql db show-connection-string --client ado.net --server ${{ vars.SQLSERVER_NAME }} --name ${{ vars.DATABASE_NAME }} -o tsv)
+          CONN_STR=$(echo $CONN_STR | sed "s/<username>/${{ secrets.SQLADMIN_LOGIN }}/g")
+          CONN_STR=$(echo $CONN_STR | sed "s/<password>/${{ secrets.SQLADMIN_PASS }}/g")
           echo "SQL_DB_CONN_STR=$CONN_STR" >> $GITHUB_ENV
 
       - name: Update Database
